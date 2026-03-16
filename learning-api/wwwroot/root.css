@@ -1,0 +1,22 @@
+﻿body {
+    background-color : white;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    width: 520px;
+    margin: auto;
+    padding: 21px;
+    border: 1px solid #f2eaea;
+    box-shadow: 0 0 10px #f2eaea;
+    border-radius: 25px;
+}
+
+.mt-10 {
+    margin-top : 10px;
+}
+
+.mt-5 {
+    margin-top : 5px;
+}

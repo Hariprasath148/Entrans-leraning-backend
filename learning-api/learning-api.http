@@ -1,0 +1,6 @@
+@learning_api_HostAddress = http://localhost:5058
+
+GET {{learning_api_HostAddress}}/
+Accept: application/json
+
+###
