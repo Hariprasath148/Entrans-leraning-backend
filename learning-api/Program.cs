@@ -26,7 +26,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 .AddCookie(options =>
 {
     options.Cookie.HttpOnly = true;
-    options.Cookie.Name = "MyAuthCookie";
+    options.Cookie.Name = "User";
 });
 
 builder.Services.AddAuthorization();
