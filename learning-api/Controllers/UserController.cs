@@ -201,8 +201,9 @@ namespace learning_api.Controllers
         {
             text = text.ToLower();
             var user = await _context.Users.Where(user => 
-                user.Email.ToLower().Contains(text) ||
+                user.Id.ToString().Contains(text) ||
                 user.Name.ToLower().Contains(text) ||
+                user.Email.ToLower().Contains(text) ||
                 user.PhoneNumber.ToLower().Contains(text)
             ).Select(u => new
             {
