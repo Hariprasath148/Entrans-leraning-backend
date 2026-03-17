@@ -195,5 +195,26 @@ namespace learning_api.Controllers
             return Ok(new { message = "User Deleted Successfully" });
         }
 
+        [Route("search/{text}")]
+        [HttpGet]
+        public async Task<IActionResult> Search(string text)
+        {
+            text = text.ToLower();
+            var user = await _context.Users.Where(user => 
+                user.Email.ToLower().Contains(text) ||
+                user.Name.ToLower().Contains(text) ||
+                user.PhoneNumber.ToLower().Contains(text)
+            ).Select(u => new
+            {
+                id = u.Id,
+                name = u.Name,
+                email = u.Email,
+                phoneNumber = u.PhoneNumber,
+                role = u.Role
+            }).ToListAsync();
+
+            return Ok(user);
+        }
+
     }
 }
