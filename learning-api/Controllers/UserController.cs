@@ -125,6 +125,33 @@ namespace learning_api.Controllers
             return Ok(users);
         }
 
+        [Route("getUserByPage")]
+        [HttpGet]
+        public async Task<IActionResult> GetUserByPage([FromQuery] int pageNumber = 1 , [FromQuery] int pageSize = 10)
+        {
+            int currentCount = await _context.Users.CountAsync();
+            var currentEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+            var listedUsers = await _context.Users.Where(u => u.Email != currentEmail)
+                                             .Skip((pageNumber - 1) * pageSize)
+                                             .Take(pageSize)
+                                             .Select(u => new
+                                             {
+                                                 id = u.Id,
+                                                 name = u.Name,
+                                                 email = u.Email,
+                                                 phoneNumber = u.PhoneNumber,
+                                                 role = u.Role
+                                             })
+                                             .ToListAsync();
+
+            return Ok(new
+            {
+                users = listedUsers,
+                totalCount = currentCount,
+                currentCount = listedUsers.Count()
+            });
+        } 
+
         [Route("getUserById/{id}")]
         [HttpGet]
         [Authorize]
@@ -197,24 +224,38 @@ namespace learning_api.Controllers
 
         [Route("search/{text}")]
         [HttpGet]
-        public async Task<IActionResult> Search(string text)
+        public async Task<IActionResult> Search(string text,[FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             text = text.ToLower();
-            var user = await _context.Users.Where(user => 
+            var currentEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+            var query =  _context.Users.Where(user => 
+                user.Email != currentEmail && (
                 user.Id.ToString().Contains(text) ||
                 user.Name.ToLower().Contains(text) ||
                 user.Email.ToLower().Contains(text) ||
-                user.PhoneNumber.ToLower().Contains(text)
-            ).Select(u => new
-            {
-                id = u.Id,
-                name = u.Name,
-                email = u.Email,
-                phoneNumber = u.PhoneNumber,
-                role = u.Role
-            }).ToListAsync();
+                user.PhoneNumber.ToLower().Contains(text))
+            );
 
-            return Ok(user);
+            var currentCount = await query.CountAsync();
+
+            var listedUsers = await query.Skip((pageNumber - 1) * pageSize)
+                                             .Take(pageSize)
+                                             .Select(u => new
+                                             {
+                                                 id = u.Id,
+                                                 name = u.Name,
+                                                 email = u.Email,
+                                                 phoneNumber = u.PhoneNumber,
+                                                 role = u.Role
+                                             })
+                                             .ToListAsync();
+            return Ok(new
+            {
+                users = listedUsers,
+                totalCount = currentCount,
+                currentCount = listedUsers.Count()
+            });
+
         }
 
     }
