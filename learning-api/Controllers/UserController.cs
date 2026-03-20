@@ -23,7 +23,7 @@ namespace learning_api.Controllers
         // API - Add new user
         [Route("addUser")]
         [HttpPost]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> SignUp([FromBody] UserDto user)
         {
 
