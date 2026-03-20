@@ -27,6 +27,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 {
     options.Cookie.HttpOnly = true;
     options.Cookie.Name = "User";
+    options.Cookie.SameSite = SameSiteMode.None; 
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
 
 builder.Services.AddAuthorization();
