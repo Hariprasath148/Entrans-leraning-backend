@@ -14,7 +14,7 @@ namespace learning_api.Controllers
 {
     [Route("[Controller]")]
     //[ServerException]
-    public class UserController : Controller
+    public class UserController : ControllerBase
     {
         public readonly AppDbContext _context;
         public UserController(AppDbContext context) { _context = context; }
