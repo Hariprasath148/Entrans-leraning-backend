@@ -24,14 +24,51 @@ builder.Services.AddCors(options =>
 
 // For the Authorization
 
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-.AddCookie(options =>
+// Helper to detect API/XHR requests so we can return 401/403 instead of redirecting to a login page
+bool IsApiRequest(HttpRequest request)
 {
-    options.Cookie.HttpOnly = true;
-    options.Cookie.Name = "User";
-    options.Cookie.SameSite = SameSiteMode.None; 
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-});
+    if (request.Path.StartsWithSegments("/api", StringComparison.OrdinalIgnoreCase)) return true;
+    if (request.Path.StartsWithSegments("/User", StringComparison.OrdinalIgnoreCase)) return true; // your controller routes
+    if (request.Headers.TryGetValue("X-Requested-With", out var xrw) && xrw == "XMLHttpRequest") return true;
+    if (request.Headers.TryGetValue("Accept", out var accept) && accept.ToString().Contains("application/json")) return true;
+    return false;
+}
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.Cookie.HttpOnly = true;
+        options.Cookie.Name = "User";
+        options.Cookie.SameSite = SameSiteMode.None;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+
+        // Prevent automatic HTML redirect for API calls — return proper status codes instead
+        options.Events = new Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationEvents
+        {
+            OnRedirectToLogin = ctx =>
+            {
+                if (IsApiRequest(ctx.Request))
+                {
+                    ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    return Task.CompletedTask;
+                }
+
+                ctx.Response.Redirect(ctx.RedirectUri);
+                return Task.CompletedTask;
+            },
+            OnRedirectToAccessDenied = ctx =>
+            {
+                if (IsApiRequest(ctx.Request))
+                {
+                    ctx.Response.StatusCode = StatusCodes.Status403Forbidden;
+                    return Task.CompletedTask;
+                }
+
+                ctx.Response.Redirect(ctx.RedirectUri);
+                return Task.CompletedTask;
+            }
+        };
+    });
 
 builder.Services.AddAuthorization();
 
