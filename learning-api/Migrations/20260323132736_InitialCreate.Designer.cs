@@ -11,7 +11,7 @@ using learning_api.Data;
 namespace learning_api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260311095852_InitialCreate")]
+    [Migration("20260323132736_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

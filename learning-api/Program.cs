@@ -1,4 +1,7 @@
 using learning_api.Data;
+using learning_api.Middleware;
+using learning_api.Repositories;
+using learning_api.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
@@ -44,12 +47,18 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     )
 );
 
+builder.Services.AddScoped<IUserRepositories, UserRepositories>();
+builder.Services.AddScoped<IUserService, UserService>();
+
 var app = builder.Build();
 
 app.UseStaticFiles();
 app.UseRouting();
 app.UseCors("AllowAngular");
 app.UseCookiePolicy();
+
+app.UseMiddleware<ExceptionMiddleware>();
+
 // Authorization and Sessions
 app.UseAuthentication();
 app.UseAuthorization();
