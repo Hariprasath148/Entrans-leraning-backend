@@ -24,7 +24,6 @@ builder.Services.AddCors(options =>
 });
 
 // For the Authorization
-
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
 .AddCookie(options =>
 {
@@ -62,7 +61,7 @@ app.UseMiddleware<ExceptionMiddleware>();
 // Authorization and Sessions
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.MapGet("/ping", () => Results.Ok("Alive"));
 // Razor Pages and controllers
 app.MapRazorPages();
 app.MapControllers();
