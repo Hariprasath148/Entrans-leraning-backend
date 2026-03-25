@@ -145,7 +145,7 @@ namespace learning_api.Services
 
             return new 
             {
-                users = searchedUsers,
+                users = searchedUsers.Select(u => u.ToDto()),
                 totalCount = searchCount,
                 currentCount = searchedUsers.Count()
             };
