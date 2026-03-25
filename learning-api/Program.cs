@@ -61,7 +61,7 @@ app.UseMiddleware<ExceptionMiddleware>();
 // Authorization and Sessions
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapGet("/ping", () => Results.Ok("Alive"));
+
 // Razor Pages and controllers
 app.MapRazorPages();
 app.MapControllers();
