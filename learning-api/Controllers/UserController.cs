@@ -84,6 +84,10 @@ namespace learning_api.Controllers
         [Authorize]
         public async Task<IActionResult> GetSession()
         {
+            if (User?.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return Unauthorized(new { message = "Invalid or expired session" });
+            }
             // get the current user email fom the cookie
             var email = User.FindFirst(ClaimTypes.Email)?.Value;
 
