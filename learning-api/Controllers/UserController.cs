@@ -81,7 +81,6 @@ namespace learning_api.Controllers
         //API - validate
         [Route("validate")]
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> GetSession()
         {
             if (User?.Identity == null || !User.Identity.IsAuthenticated)
