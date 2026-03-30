@@ -23,7 +23,7 @@ namespace learning_api.Middleware
             context.Response.ContentType = "/application/json";
 
             var statusCode = HttpStatusCode.InternalServerError;
-            var message = "Something wen wrong";
+            var message = "Something went wrong";
             
             if(e is UnauthorizedAccessException)
             {

@@ -44,6 +44,7 @@ namespace learning_api.Controllers
             // Create a list of claims containing the user's email
             var claims = new List<Claim>
             {
+                new Claim(ClaimTypes.NameIdentifier, existingUser.Id.ToString()),
                 new Claim(ClaimTypes.Email, existingUser.Email)
             };
 

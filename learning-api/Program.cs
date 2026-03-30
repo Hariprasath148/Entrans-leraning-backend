@@ -48,6 +48,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IUserRepositories, UserRepositories>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IQuestionPaperRespositories, QuestionPaperRespositories>();
+builder.Services.AddScoped<IQuestionPaperService, QuestionPaperService>();
 
 var app = builder.Build();
 

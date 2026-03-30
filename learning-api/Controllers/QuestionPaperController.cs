@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using learning_api.Dto;
+﻿using learning_api.Dto;
+using learning_api.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 namespace learning_api.Controllers
 {
 
@@ -7,122 +10,77 @@ namespace learning_api.Controllers
     public class QuestionPaperController : Controller
     {
 
-        private static QuestionPaper QuestionPaper = new QuestionPaper
-        {
-            Questions = new QuestionDto[]{
-                new QuestionDto{
-                    Id = 1,
-                    Type = 1,
-                    Question = "What does HTML stand for?",
-                    Required = true,
-                    IsAttended = false
-                },
-                new QuestionDto{
-                    Id = 2,
-                    Type = 3,
-                    Question = "Which of the following is a JavaScript framework?",
-                    Required = true,
-                    IsAttended = false,
-                    Choice = new List<string>{ "Laravel", "Django", "Angular", "Flask"}
-                },
-                new QuestionDto{
-                    Id = 3,
-                    Type = 2,
-                    Question = "Explain the difference between frontend and backend development.",
-                    Required = true,
-                    IsAttended = false
-                },
-                new QuestionDto{
-                    Id = 4,
-                    Type = 4,
-                    Question = "Select JavaScript libraries/frameworks.",
-                    Required = true,
-                    IsAttended = false,
-                    Choice = new List<string>{ "React", "Angular", "Laravel", "Vue" }
-                },
-                new QuestionDto{
-                    Id = 5,
-                    Type = 1,
-                    Question = "What does SQL stand for?",
-                    Required = true,
-                    IsAttended = false  
-                },
-                new QuestionDto{
-                    Id = 6,
-                    Type = 3,
-                    Question = "Which of the following is a JavaScript framework?",
-                    Required = true,
-                    IsAttended = false,
-                    Choice = new List<string>{ "Java", "C", "Python", "JavaScript" }
-                },
-                new QuestionDto{
-                    Id = 7,
-                    Type = 4,
-                    Question = "Select operating systems.",
-                    Required = true,
-                    IsAttended = false,
-                    Choice = new List<string>{ "Windows", "Linux", "SQL", "macOS" }
-                },
-                new QuestionDto{
-                    Id = 8,
-                    Type = 2,
-                    Question = "Explain the role of CSS in web development.",
-                    Required = true,
-                    IsAttended = false
-                },
-                new QuestionDto{
-                    Id = 9,
-                    Type = 3,
-                    Question = "Which data structure uses FIFO?",
-                    Required = true,
-                    IsAttended = false,
-                    Choice = new List<string>{ "Stack", "Queue", "Tree", "Graph" }
-                },
-                new QuestionDto{
-                    Id = 10,
-                    Type = 4,
-                    Question = "Select backend languages.",
-                    Required = true,
-                    IsAttended = false,
-                    Choice = new List<string>{ "Node.js", "Python", "PHP", "CSS" }
-                },
-            },
-            IsSubmitted = false
-        };
+        public readonly IQuestionPaperService _questionPaperService;
 
+        public QuestionPaperController(IQuestionPaperService QuestionPaperservice) { _questionPaperService = QuestionPaperservice; }
 
-        [HttpGet("getAllQuestions")]
-        public IActionResult getAllQuestions()
+        [Authorize]
+        [HttpPost("addQuestionPaper/{QuestionPaperText}")]
+        public async Task<IActionResult> AddQuestionPaper(string QuestionPaperText)
         {
-            return Ok(QuestionPaper);
+            var newQuestionPaper = await _questionPaperService.AddQuestionPaper(QuestionPaperText);
+
+            return Ok(newQuestionPaper);
         }
 
-        [HttpPost("editQuestion")]
-        public IActionResult setAnswer([FromBody] QuestionDto changeQuesion)
+        [Authorize]
+        [HttpPost("addNewQuestion/{id}")]
+        public async Task<IActionResult> AddNewQuestion(int id,[FromBody] QuestionDto questionDto)
         {
+            var questionPaper = await _questionPaperService.AddQuestions(id, questionDto);
 
-            QuestionDto question = Array.Find(QuestionPaper.Questions, question => question.Id == changeQuesion.Id);
-
-            if (question == null) return BadRequest(new { error = "Quesion Not Found." });
-
-            question.IsAttended = true;
-
-            if (question.Type == 3 || question.Type == 4)
-            {
-                question.AnswerList = changeQuesion.AnswerList;
-            }
-            else
-            {
-                question.AnswerText = changeQuesion.AnswerText;
-            }
-            return Ok(new { message = "Sucessfully Updated" });
+            return Ok(questionPaper);
         }
 
-        [HttpPost("submitQuestions")]
-        public IActionResult submitQuesitons()
+        [Authorize]
+        [HttpGet("getQuestionPaperById/{id}")]
+        public async Task<IActionResult> GetQuestionPaperById(int id)
         {
-            QuestionPaper.IsSubmitted = true;
-            return Ok(QuestionPaper);
+            var questionPaper = await _questionPaperService.GetQuestionPaperById(id);
+
+            return Ok(questionPaper);
+        }
+
+        [Authorize]
+        [HttpPost("setQuestionPaperAnswer")]
+        public async Task<IActionResult> SetQuestionPaperAnswer([FromBody] UserQuestionPaperAnswerDto userQuestionPaperAnswerDto)
+        {
+            var id = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+            var quesitionAttempt = await _questionPaperService.AddUserQuestionPaperAnswers(id, userQuestionPaperAnswerDto);
+
+            return Ok(quesitionAttempt);
+        }
+
+        [Authorize]
+        [HttpGet("getAllQuestions/{id}")]
+        public async Task<IActionResult> GetAllQuestions(int id)
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+            var mergedQuestionPaper = await _questionPaperService.GetAllQUestionsForUser(userId, id);
+
+            return Ok(mergedQuestionPaper);
+        }
+
+        [Authorize]
+        [HttpGet("getAllQuestionPaper")]
+        public async Task<IActionResult> getAllQuestionPaper()
+        {
+            var questionPaper = await _questionPaperService.GetAllQuestionPaper();
+
+            return Ok(questionPaper);
+        }
+
+        [Authorize]
+        [HttpPost("submitQuestions/{id}")]
+        public async Task<IActionResult> submitQuesitons(int id)
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+            await _questionPaperService.SubmitTheQuestionPaper(userId,id);
+
+            return Ok(new {message = "Question Paper Submitted"});
         }
 
     }
