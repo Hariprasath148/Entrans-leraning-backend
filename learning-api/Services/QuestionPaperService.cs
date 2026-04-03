@@ -105,15 +105,24 @@ namespace learning_api.Services
             return mergedQuesitons;
         }
 
-        public async Task<object> GetAllQuestionPaper()
+        public async Task<object> GetAllQuestionPaper(int UserId)
         {
             var questionPaper = await _questionPaperRespositories.GetAllQuestionPaper();
 
-            return questionPaper.Select( q =>
-            new {
-                Id = q.Id,
-                Title = q.Title
-            }).ToList();
+            int Progress = await _questionPaperRespositories.GetUserProgressByUserId(UserId);
+
+            int QuestionsCount = await _questionPaperRespositories.GetQuestionsCount();
+
+            return new
+            {
+                questionPaper = questionPaper.Select(q =>
+                      new
+                      {
+                          Id = q.Id,
+                          Title = q.Title
+                      }).ToList(),
+                UserProgress = Math.Floor((double)Progress / QuestionsCount * 100)
+            };
         }
 
         public async Task SubmitTheQuestionPaper(int Id,int QuestionPaperId)

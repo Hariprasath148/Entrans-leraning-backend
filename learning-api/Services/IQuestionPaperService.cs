@@ -9,7 +9,7 @@ namespace learning_api.Services
         Task<object> AddQuestionPaper(string QuestionPaperName);
         Task<object> AddQuestions(int Id, QuestionDto questionDto);
         Task<object> GetQuestionPaperById(int Id);
-        Task<object> GetAllQuestionPaper();
+        Task<object> GetAllQuestionPaper(int UserId);
         Task<object> AddUserQuestionPaperAnswers(int Id,UserQuestionPaperAnswerDto userQuestionPaperAnswerDto);
         Task<object> GetAllQUestionsForUser(int UserId,int QuestionPaperId);
         Task SubmitTheQuestionPaper(int Id,int QuestionPaperId);

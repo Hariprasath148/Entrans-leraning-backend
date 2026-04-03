@@ -51,5 +51,16 @@ namespace learning_api.Repositories
         {
             return await _context.QuestionPaper.ToListAsync();
         }
+
+        public async Task<int> GetUserProgressByUserId(int Id) {
+            return await _context.QuestionAttempts
+                                  .Where(QA => QA.UserId == Id)
+                                  .SumAsync(QA => QA.UserQuestionPaperAnswers.Count());
+        }
+
+        public async Task<int> GetQuestionsCount()
+        {
+            return await _context.Questions.CountAsync();
+        }
     }
 }

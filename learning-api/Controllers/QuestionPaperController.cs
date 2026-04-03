@@ -67,7 +67,9 @@ namespace learning_api.Controllers
         [HttpGet("getAllQuestionPaper")]
         public async Task<IActionResult> getAllQuestionPaper()
         {
-            var questionPaper = await _questionPaperService.GetAllQuestionPaper();
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+            var questionPaper = await _questionPaperService.GetAllQuestionPaper(userId);
 
             return Ok(questionPaper);
         }

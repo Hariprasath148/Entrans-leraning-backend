@@ -12,5 +12,7 @@ namespace learning_api.Repositories
         Task AddQuestionPaperAttempt(QuestionAttempt QuestionAttempt);
         Task<List<QuestionPaper>> GetAllQuestionPaper();
         Task AddUserQuestionPaperAnswerToQuestionAttempt(QuestionAttempt QuestionAttempt, UserQuestionPaperAnswer UserQuestionPaperAnswer);
+        Task<int> GetUserProgressByUserId(int Id);
+        Task<int> GetQuestionsCount();
     }
 }
