@@ -11,6 +11,7 @@ builder.Services.AddRazorPages();
 
 // Cors
 
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular",
