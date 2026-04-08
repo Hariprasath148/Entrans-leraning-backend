@@ -13,5 +13,7 @@ namespace learning_api.Services
         Task<object> AddUserQuestionPaperAnswers(int Id,UserQuestionPaperAnswerDto userQuestionPaperAnswerDto);
         Task<object> GetAllQUestionsForUser(int UserId,int QuestionPaperId);
         Task SubmitTheQuestionPaper(int Id,int QuestionPaperId);
+        Task<object> InsterQuestionPaperWithQuestions(int Id, List<QuestionDto> Questions);
+        Task<object> InsertNewQuestionPaper(QuestionPaperBulkDto QuestionPaper);
     }
 }

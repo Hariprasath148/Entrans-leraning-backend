@@ -14,5 +14,6 @@ namespace learning_api.Repositories
         Task AddUserQuestionPaperAnswerToQuestionAttempt(QuestionAttempt QuestionAttempt, UserQuestionPaperAnswer UserQuestionPaperAnswer);
         Task<int> GetUserProgressByUserId(int Id);
         Task<int> GetQuestionsCount();
+        Task AddRangeQuestionToQuestionsPaper(QuestionPaper QuestionPaper, List<Questions> Questions);
     }
 }

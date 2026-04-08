@@ -62,5 +62,11 @@ namespace learning_api.Repositories
         {
             return await _context.Questions.CountAsync();
         }
+
+        public async Task AddRangeQuestionToQuestionsPaper(QuestionPaper QuestionPaper, List<Questions> Questions)
+        {
+            QuestionPaper.Questions.AddRange(Questions);
+            await _context.SaveChangesAsync();
+        }
     }
 }

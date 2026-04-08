@@ -121,7 +121,7 @@ namespace learning_api.Services
                           Id = q.Id,
                           Title = q.Title
                       }).ToList(),
-                UserProgress = Math.Floor((double)Progress / QuestionsCount * 100)
+                UserProgress = (QuestionsCount == 0) ? 0 : Math.Floor((double)Progress / QuestionsCount * 100)
             };
         }
 
@@ -137,6 +137,44 @@ namespace learning_api.Services
             userAttempt.IsSubmitted = true;
 
             await _questionPaperRespositories.SaveChanges();
+        }
+
+        public async Task<object> InsterQuestionPaperWithQuestions(int Id, List<QuestionDto> Questions)
+        {
+            QuestionPaper questionPaper = await _questionPaperRespositories.GetQuestionPaperById(Id);
+
+            if (questionPaper == null) throw new ArgumentException("Question Paper not found with the give Id " + Id);
+
+            if (Questions == null) throw new ArgumentException("Enter the Quesiton in the Array Fromat");
+
+            List<Questions> questions = new List<Questions>();
+
+            foreach(QuestionDto Question in Questions)
+            {
+                questions.Add(Question.ToQuestionsEntity());
+            }
+
+            await _questionPaperRespositories.AddRangeQuestionToQuestionsPaper(questionPaper, questions);
+
+            return questionPaper.ToQuestionPaperToDto();
+        }
+
+        public async Task<object> InsertNewQuestionPaper(QuestionPaperBulkDto QuestionPaper)
+        {
+
+            if (QuestionPaper.Title == null || QuestionPaper.Title.Length == 0)
+            {
+                throw new ArgumentException("Invalid QuestionPaper Name");
+            }
+
+            QuestionPaper newQuestionPaper = new QuestionPaper
+            {
+                Title = QuestionPaper.Title
+            };
+
+            await _questionPaperRespositories.AddQuestionPaper(newQuestionPaper);
+
+            return await InsterQuestionPaperWithQuestions(newQuestionPaper.Id, QuestionPaper.Questions);
         }
     }
 }

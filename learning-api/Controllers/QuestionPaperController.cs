@@ -85,5 +85,22 @@ namespace learning_api.Controllers
             return Ok(new {message = "Question Paper Submitted"});
         }
 
+        [Authorize]
+        [HttpPost("insertQuestionPaperWithQuestions/{id}")]
+        public async Task<IActionResult> insterQuestionPaperWithQuestions(int id, [FromBody] List<QuestionDto> Questions)
+        {
+            var questionPaper = await _questionPaperService.InsterQuestionPaperWithQuestions(id, Questions);
+
+            return Ok(questionPaper);
+        }
+
+        [Authorize]
+        [HttpPost("insertNewQuesitonPaper")]
+        public async Task<IActionResult> insetNewQuesitonPaper([FromBody] QuestionPaperBulkDto quesitonPaperDto)
+        {
+            var questionPaper = await _questionPaperService.InsertNewQuestionPaper(quesitonPaperDto);
+
+            return Ok(questionPaper);
+        }
     }
 }
