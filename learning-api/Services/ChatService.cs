@@ -1,4 +1,5 @@
-﻿using learning_api.Repositories;
+﻿using learning_api.Dto;
+using learning_api.Repositories;
 
 namespace learning_api.Services
 {
@@ -17,6 +18,22 @@ namespace learning_api.Services
             }
 
             return chatList;
+        }
+
+        public async Task<object> GetMessages(int UserId, int OtherUserId)
+        {
+            var messageList = await _chatRepositories.GetMessages(UserId, OtherUserId);
+
+            return messageList.Select(m => new MessagesDto
+            {
+                Id = m.Id,
+                SenderId = m.SenderId,
+                Text = m.Message,
+
+                Timestamp = m.Timestamp,
+
+                IsSent = m.SenderId == UserId
+            }).ToList();
         }
     }
 }

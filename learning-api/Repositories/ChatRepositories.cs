@@ -2,6 +2,7 @@
 using learning_api.Dto;
 using learning_api.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.Intrinsics.X86;
 
 namespace learning_api.Repositories
 {
@@ -52,6 +53,22 @@ namespace learning_api.Repositories
                 .ToListAsync();
 
             return result;
+        }
+
+        public async Task<List<ChatMessage>> GetMessages(int UserId, int OtherUserId)
+        {
+            return await _context.ChatMessage
+            .Where(m =>
+                (m.SenderId == UserId && m.ReceiverId == OtherUserId) ||
+                (m.SenderId == OtherUserId && m.ReceiverId == UserId))
+            .OrderBy(m => m.Timestamp)
+            .ToListAsync();
+        }
+
+        public async Task AddMessage(ChatMessage ChatMessage)
+        {
+            _context.ChatMessage.Add(ChatMessage);
+            await _context.SaveChangesAsync();
         }
     }
 }

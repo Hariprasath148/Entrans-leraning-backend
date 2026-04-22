@@ -1,18 +1,16 @@
-﻿using learning_api.Services;
-using Microsoft.EntityFrameworkCore;
+﻿using learning_api.Models;
+using learning_api.Repositories;
+using learning_api.Services;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 
 namespace learning_api.Hubs
 {
     public class ChatHub : Hub
     {
-        private readonly UserConnectionManager _connectionManager;
-
-        public ChatHub(UserConnectionManager connectionManager)
-        {
-            _connectionManager = connectionManager;
-        }
-
+        public readonly IChatRepositories _chatRepositories;
+        public readonly UserConnectionManager _connectionManager;
+        public ChatHub(IChatRepositories chatRepositories, UserConnectionManager userConnectionManager) { _chatRepositories = chatRepositories; _connectionManager = userConnectionManager; }
         // Register user when connected
         public async Task RegisterUser(int userId)
         {
@@ -30,6 +28,16 @@ namespace learning_api.Hubs
                 await Clients.Client(receiverConnectionId)
                     .SendAsync("ReceivePrivateMessage", senderId, message);
             }
+
+            var chatMessage = new ChatMessage
+            {
+                SenderId = senderId,
+                ReceiverId = receiverId,
+                Message = message,
+                Timestamp = DateTime.UtcNow
+            };
+
+            await _chatRepositories.AddMessage(chatMessage);
         }
     }
 }
