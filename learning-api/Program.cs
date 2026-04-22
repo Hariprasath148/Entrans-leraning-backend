@@ -1,4 +1,5 @@
 using learning_api.Data;
+using learning_api.Hubs;
 using learning_api.Middleware;
 using learning_api.Repositories;
 using learning_api.Services;
@@ -8,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
-
+builder.Services.AddSignalR();
 // Cors
 
 
@@ -55,6 +56,9 @@ builder.Services.AddScoped<IUserRepositories, UserRepositories>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IQuestionPaperRespositories, QuestionPaperRespositories>();
 builder.Services.AddScoped<IQuestionPaperService, QuestionPaperService>();
+builder.Services.AddScoped<IChatRepositories , ChatRepositories>();
+builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddSingleton<UserConnectionManager>();
 
 var app = builder.Build();
 
@@ -72,5 +76,5 @@ app.UseAuthorization();
 // Razor Pages and controllers
 app.MapRazorPages();
 app.MapControllers();
-
+app.MapHub<ChatHub>("/chatHub");
 app.Run();

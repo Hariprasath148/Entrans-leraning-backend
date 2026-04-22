@@ -12,6 +12,7 @@ namespace learning_api.Data
         public DbSet<Questions> Questions { get; set; }
         public DbSet<QuestionAttempt> QuestionAttempts { get; set; }
         public DbSet<UserQuestionPaperAnswer> QuestionPaperAnswers { get; set; }
+        public DbSet<ChatMessage> ChatMessage { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
