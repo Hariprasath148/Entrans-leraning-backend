@@ -1,4 +1,5 @@
 ﻿using learning_api.Dto;
+using learning_api.Models;
 using learning_api.Repositories;
 
 namespace learning_api.Services
@@ -11,6 +12,18 @@ namespace learning_api.Services
         public async Task<object> GetChatUsers(int UserId)
         {
             var chatList = await _chatRepositories.GetChatUsers(UserId);
+
+            foreach (var user in chatList)
+            {
+                user.IsOnline = _userConnectionManager.IsUserOnline(user.Id);
+            }
+
+            return chatList;
+        }
+
+        public async Task<object> GetChatUsersWithSearch(int UserId, string SearchText)
+        {
+            var chatList = await _chatRepositories.GetChatUsersWithSearch(UserId, SearchText);
 
             foreach (var user in chatList)
             {

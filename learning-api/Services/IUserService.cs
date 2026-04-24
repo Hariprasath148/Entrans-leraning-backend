@@ -1,4 +1,5 @@
 ﻿using learning_api.Dto;
+using learning_api.Models;
 
 namespace learning_api.Services
 {
@@ -13,5 +14,6 @@ namespace learning_api.Services
         Task<object> UpdateUser(int Id, UpdateUserDto UpdateUser);
         Task RemoveUser(int Id);
         Task<object> Search(string Text, string Email, int PageNumber, int PageSize);
+        Task<List<ChatSearchDto>> GetUserForChat(string Text, string Email);
     }
 }

@@ -83,5 +83,22 @@ namespace learning_api.Repositories
              .ToListAsync();
         }
 
+        public async Task<List<ChatSearchDto>> GetUserForChat(string Text, string Email)
+        {
+            return await _context.Users
+                .Where(user => user.Email != Email && (
+               user.Id.ToString().Contains(Text) ||
+               user.Name.ToLower().Contains(Text) ||
+               user.Email.ToLower().Contains(Text) ||
+               user.PhoneNumber.ToLower().Contains(Text)))
+                .Select(user =>
+                    new ChatSearchDto
+                    {
+                        Name = user.Name,
+                        Id = user.Id,
+                        Email = user.Email
+                    }).ToListAsync();
+        }
+
     }
 }

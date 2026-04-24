@@ -24,6 +24,17 @@ namespace learning_api.Controllers
             return Ok(chatList);
         }
 
+        [HttpGet("users/search/{searchText}")]
+        [Authorize]
+        public async Task<IActionResult> GetChatUsers(string searchText)
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+            var chatList = await _chatService.GetChatUsersWithSearch(userId,searchText);
+
+            return Ok(chatList);
+        }
+
         [HttpGet("messages/{OtherUserId}")]
         [Authorize]
         public async Task<IActionResult> GetChatUsers(int OtherUserId)

@@ -15,5 +15,6 @@ namespace learning_api.Repositories
         Task RemoveUser(User user);
         Task<int> GetSearchCount(string Text, string Email);
         Task<List<User>> GetUserBySearch(string Text, string Email,int PageNumber, int PageSize=10);
+        Task<List<ChatSearchDto>> GetUserForChat(string Text,string Email);
     }
 }

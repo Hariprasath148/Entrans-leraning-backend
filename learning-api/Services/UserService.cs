@@ -12,7 +12,8 @@ namespace learning_api.Services
     public class UserService :  IUserService
     {
         public readonly IUserRepositories _userRepositories;
-        public UserService(IUserRepositories userRepositories) { _userRepositories = userRepositories; }
+        public readonly UserConnectionManager _userConnectionManager;
+        public UserService(IUserRepositories userRepositories, UserConnectionManager userConnectionManager) { _userRepositories = userRepositories; _userConnectionManager = userConnectionManager; }
         public async Task<object> AddUser(UserDto user)
         {
             User existingUser = await _userRepositories.GetUserByEmail(user.Email);
@@ -149,6 +150,20 @@ namespace learning_api.Services
                 totalCount = searchCount,
                 currentCount = searchedUsers.Count()
             };
+        }
+
+        public async Task<List<ChatSearchDto>> GetUserForChat(string Text, string Email)
+        {
+            string searchText = Text.ToLower();
+
+            var searchedUsers = await _userRepositories.GetUserForChat(searchText, Email);
+
+            foreach (var user in searchedUsers)
+            {
+                user.IsOnline = _userConnectionManager.IsUserOnline(user.Id);
+            }
+
+            return searchedUsers;
         }
 
     }

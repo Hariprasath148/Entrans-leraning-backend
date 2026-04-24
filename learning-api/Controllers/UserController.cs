@@ -179,5 +179,20 @@ namespace learning_api.Controllers
             return Ok(users);
         }
 
+        [Route("getUserForChat/{text}")]
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> Search(string text)
+        {
+
+            // get the current email from the cookie
+            var currentEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+
+            var users = await _userService.GetUserForChat(text, currentEmail);
+
+            // return the user and admin record, totalCount how many matches the search text in whole DB and currentCount how many details currently matched
+            return Ok(users);
+        }
+
     }
 }

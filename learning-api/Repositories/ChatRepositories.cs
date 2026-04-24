@@ -55,6 +55,47 @@ namespace learning_api.Repositories
             return result;
         }
 
+        public async Task<List<ChatListDto>> GetChatUsersWithSearch(int UserId, string searchText)
+        {
+            var userMessages = _context.ChatMessage
+                                       .Where(m => (m.SenderId == UserId || m.ReceiverId == UserId) && m.Message.Contains(searchText))
+                                       .Select(m => new
+                                       {
+                                           m.Id,
+                                           OtherUserId = m.SenderId == UserId ? m.ReceiverId : m.SenderId,
+                                           m.Message,
+                                           m.Timestamp
+                                       });
+
+            var lastPerUser = userMessages.GroupBy(m => m.OtherUserId)
+                                          .Select(g => new
+                                          {
+                                              OtherUserId = g.Key,
+                                              LastTimestamp = g.Max(x => x.Timestamp)
+                                          });
+
+            var lastMessages = lastPerUser.Join(userMessages,
+                                            l => new { l.OtherUserId, l.LastTimestamp },
+                                            m => new { OtherUserId = m.OtherUserId, LastTimestamp = m.Timestamp },
+                                            (l, m) => m);
+
+            var result = await lastMessages
+                .Join(_context.Users,
+                      m => m.OtherUserId,
+                      u => u.Id,
+                      (m, u) => new ChatListDto
+                      {
+                          Id = u.Id,
+                          Name = u.Name,
+                          LastMessage = m.Message,
+                          LastMessageTime = m.Timestamp
+                      })
+                .OrderByDescending(x => x.LastMessageTime)
+                .ToListAsync();
+
+            return result;
+        }
+
         public async Task<List<ChatMessage>> GetMessages(int UserId, int OtherUserId)
         {
             return await _context.ChatMessage
